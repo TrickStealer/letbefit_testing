@@ -1,2 +1,9 @@
 # letbefit_testing
-https://letbefit.ru/
+Тестирование формы заказа на сайте: https://letbefit.ru/
+
+
+
+**Используемые библиотеки:**
+
+* chai
+* selenium-webdriver
