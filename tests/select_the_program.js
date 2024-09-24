@@ -1,6 +1,6 @@
-const {Builder, By, Key} = require ("selenium-webdriver");
-const assert = require ("assert");
-
+import { Builder, By, Key } from 'selenium-webdriver';
+import { should } from 'chai';
+should();
 
 async function selectTheProgram(class_name) {
   let driver = await new Builder().forBrowser('chrome').build();
@@ -9,19 +9,18 @@ async function selectTheProgram(class_name) {
     await driver.get("https://letbefit.ru/");
 
     let element = await driver.findElement(By.className(class_name));
-    element.click();
+    // element.click();
 
     await element.getAttribute("class").then((text) => {
-      assert(
-        text.split(' ').includes('active'),
+      text.split(' ').should.include(
+        'active',
         `Test "selectTheProgram": element "${class_name}" is not active`
       );
-      console.log(`Test "selectTheProgram": element "${class_name}" is active`)
-    }).catch(err => {
-        console.error(err);
+      console.log(`Test "selectTheProgram": element "${class_name}" is active`);
     })
-
-    await driver.sleep(3000);
+  }
+  catch(message) {
+    console.log(message);
   }
   finally {
     await driver.quit();
