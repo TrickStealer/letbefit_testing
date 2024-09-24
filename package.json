@@ -1,0 +1,17 @@
+{
+  "name": "letbefit_testing",
+  "version": "1.0.0",
+  "description": "https://letbefit.ru/",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "chai": "^5.1.1",
+    "selenium-webdriver": "^4.25.0"
+  }
+}
