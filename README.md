@@ -5,5 +5,8 @@
 
 **Используемые библиотеки:**
 
-* chai
-* selenium-webdriver
+* Chai
+* Selenium WebDriver
+
+**Фреймворк:**
+* Mocha
