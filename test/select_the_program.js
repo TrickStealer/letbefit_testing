@@ -9,7 +9,7 @@ should();
 
 describe("Select the program", function(){
   it("seaLight", async function(){
-    const class_name = 'program-type__el--seaLigt'
+    const class_name = 'program-type__el--seaLight'
 
     let driver = await new Builder().forBrowser('chrome').build();
 
@@ -40,7 +40,7 @@ describe("Select the program", function(){
       await driver.get("https://letbefit.ru/");
 
       let element = await driver.findElement(By.className(class_name));
-      // element.click();
+      element.click();
 
       await element.getAttribute("class").then((text) => {
         text.split(' ').should.include(
