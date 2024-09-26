@@ -1,3 +1,4 @@
+import { config } from '../config.js';
 import { Builder, By, Key } from 'selenium-webdriver';
 import { should } from 'chai';
 should();
@@ -13,7 +14,7 @@ describe("Scrolling to form", function(){
     const scroll_check_limit = 10000; // ms
 
     try {
-      await driver.get("https://letbefit.ru/");
+      await driver.get(config.web_site);
       await driver.findElement(By.css(css_button)).click();
 
       const text_Y = await driver.findElement(By.css(css_text)).getRect().then((value) => {return value.y;});
