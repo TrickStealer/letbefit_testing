@@ -3,7 +3,7 @@ import { Builder, By, Key } from 'selenium-webdriver';
 import { should } from 'chai';
 should();
 
-// === Universal constants and functions ===
+// === UNIVERSAL CONSTANTS AND FUNCTIONS ===
 
 const check_period = config.check_period;
 const check_limit = config.check_limit;
@@ -22,6 +22,7 @@ async function checkIsActive(element) {
 // Check is element have goal text
 async function checkText([element, goal_text]) {
   return await element.getText().then((text) => {
+    console.log(`${text} vs ${goal_text}`);
     return text == goal_text
   })
 }
@@ -77,7 +78,7 @@ async function algorithm(driver, program_name, diet_name, title_name) {
 }
 
 
-// === Tests ===
+// === TESTS ===
 
 describe("Select the program", function(){
   it("Снижение веса - Extralight", async function(){
@@ -85,7 +86,7 @@ describe("Select the program", function(){
 
     const program_name = "weightLoss";
     const diet_name = "extralight";
-    const title_name = "Заказать Extralight"
+    const title_name = "Заказать Extralight";
 
     try {
       await algorithm(driver, program_name, diet_name, title_name);
@@ -100,7 +101,7 @@ describe("Select the program", function(){
 
     const program_name = "weightLoss";
     const diet_name = "light";
-    const title_name = "Заказать Light"
+    const title_name = "Заказать Light";
 
     try {
       await algorithm(driver, program_name, diet_name, title_name);
@@ -110,19 +111,20 @@ describe("Select the program", function(){
     }
   });
 
-  // it("Снижение веса - Gluten Lacto Free", async function(){
-  //   let driver = await new Builder().forBrowser('chrome').build();
-  //
-  //   const program_name = "weightLoss";
-  //   const diet_name = "gluten_free";
-  //
-  //   try {
-  //     await algorithm(driver, program_name, diet_name, title_name);
-  //   }
-  //   finally {
-  //     await driver.quit();
-  //   }
-  // });
+  it("Снижение веса - Gluten Lacto Free", async function(){
+    let driver = await new Builder().forBrowser('chrome').build();
+
+    const program_name = "weightLoss";
+    const diet_name = "gluten_free";
+    const title_name = "Заказать Gluten Lacto Free";
+
+    try {
+      await algorithm(driver, program_name, diet_name, title_name);
+    }
+    finally {
+      await driver.quit();
+    }
+  });
 
 
   it("Поддержание формы - Normal", async function(){
@@ -130,158 +132,167 @@ describe("Select the program", function(){
 
     const program_name = "saveForm";
     const diet_name = "normal";
-    const title_name = "Заказать Normal"
+    const title_name = "Заказать Normal";
 
     try {
       await algorithm(driver, program_name, diet_name, title_name);
     }
     finally {
-      // await driver.sleep(5000);
       await driver.quit();
     }
   });
 
-  // it("Поддержание формы - Balance Premium", async function(){
-  //   let driver = await new Builder().forBrowser('chrome').build();
-  //
-  //   const program_name = "saveForm";
-  //   const diet_name = "balancepremium";
-  //
-  //   try {
-  //     await algorithm(driver, program_name, diet_name, title_name);
-  //   }
-  //   finally {
-  //     await driver.quit();
-  //   }
-  // });
-  //
-  //
-  // it("Набор массы - Strong", async function(){
-  //   let driver = await new Builder().forBrowser('chrome').build();
-  //
-  //   const program_name = "weightIncrease";
-  //   const diet_name = "strong";
-  //
-  //   try {
-  //     await algorithm(driver, program_name, diet_name, title_name);
-  //   }
-  //   finally {
-  //     await driver.quit();
-  //   }
-  // });
-  //
-  // it("Набор массы - Strong Premium", async function(){
-  //   let driver = await new Builder().forBrowser('chrome').build();
-  //
-  //   const program_name = "weightIncrease";
-  //   const diet_name = "strongpremium";
-  //
-  //   try {
-  //     await algorithm(driver, program_name, diet_name, title_name);
-  //   }
-  //   finally {
-  //     await driver.quit();
-  //   }
-  // });
-  //
-  // it("Набор массы - Super Strong", async function(){
-  //   let driver = await new Builder().forBrowser('chrome').build();
-  //
-  //   const program_name = "weightIncrease";
-  //   const diet_name = "superstrong";
-  //
-  //   try {
-  //     await algorithm(driver, program_name, diet_name, title_name);
-  //   }
-  //   finally {
-  //     await driver.quit();
-  //   }
-  // });
-  //
-  //
-  // it("Питание без мяса - Vegan", async function(){
-  //   let driver = await new Builder().forBrowser('chrome').build();
-  //
-  //   const program_name = "meatLoss";
-  //   const diet_name = "veggi";
-  //
-  //   try {
-  //     await algorithm(driver, program_name, diet_name, title_name);
-  //   }
-  //   finally {
-  //     await driver.quit();
-  //   }
-  // });
-  //
-  // it("Питание без мяса - Fish", async function(){
-  //   let driver = await new Builder().forBrowser('chrome').build();
-  //
-  //   const program_name = "meatLoss";
-  //   const diet_name = "fish";
-  //
-  //   try {
-  //     await algorithm(driver, program_name, diet_name, title_name);
-  //   }
-  //   finally {
-  //     await driver.quit();
-  //   }
-  // });
-  //
-  // it("Питание без мяса - Средизем­номорская диета", async function(){
-  //   let driver = await new Builder().forBrowser('chrome').build();
-  //
-  //   const program_name = "meatLoss";
-  //   const diet_name = "middlesea";
-  //
-  //   try {
-  //     await algorithm(driver, program_name, diet_name, title_name);
-  //   }
-  //   finally {
-  //     await driver.quit();
-  //   }
-  // });
-  //
-  //
-  // it("Очищение организма - Gluten Lacto Free", async function(){
-  //   let driver = await new Builder().forBrowser('chrome').build();
-  //
-  //   const program_name = "cleanHeаlth";
-  //   const diet_name = "gluten_free";
-  //
-  //   try {
-  //     await algorithm(driver, program_name, diet_name, title_name);
-  //   }
-  //   finally {
-  //     await driver.quit();
-  //   }
-  // });
-  //
-  //
-  // it("Питание в офис - Everydaily", async function(){
-  //   let driver = await new Builder().forBrowser('chrome').build();
-  //
-  //   const program_name = "foodOffice";
-  //   const diet_name = "everydaily";
-  //
-  //   try {
-  //     await algorithm(driver, program_name, diet_name, title_name);
-  //   }
-  //   finally {
-  //     await driver.quit();
-  //   }
-  // });
-  //
-  // it("Питание в офис - Daily", async function(){
-  //   let driver = await new Builder().forBrowser('chrome').build();
-  //
-  //   const program_name = "foodOffice";
-  //   const diet_name = "daily";
-  //
-  //   try {
-  //     await algorithm(driver, program_name, diet_name, title_name);
-  //   }
-  //   finally {
-  //     await driver.quit();
-  //   }
-  // });
+  it("Поддержание формы - Balance Premium", async function(){
+    let driver = await new Builder().forBrowser('chrome').build();
+
+    const program_name = "saveForm";
+    const diet_name = "balancepremium";
+    const title_name = "Заказать Balance Premium";
+
+    try {
+      await algorithm(driver, program_name, diet_name, title_name);
+    }
+    finally {
+      await driver.quit();
+    }
+  });
+
+
+  it("Набор массы - Strong", async function(){
+    let driver = await new Builder().forBrowser('chrome').build();
+
+    const program_name = "weightIncrease";
+    const diet_name = "strong";
+    const title_name = "Заказать Strong";
+
+    try {
+      await algorithm(driver, program_name, diet_name, title_name);
+    }
+    finally {
+      await driver.quit();
+    }
+  });
+
+  it("Набор массы - Strong Premium", async function(){
+    let driver = await new Builder().forBrowser('chrome').build();
+
+    const program_name = "weightIncrease";
+    const diet_name = "strongpremium";
+    const title_name = "Заказать Strong Premium";
+
+    try {
+      await algorithm(driver, program_name, diet_name, title_name);
+    }
+    finally {
+      await driver.quit();
+    }
+  });
+
+  it("Набор массы - Super Strong", async function(){
+    let driver = await new Builder().forBrowser('chrome').build();
+
+    const program_name = "weightIncrease";
+    const diet_name = "superstrong";
+    const title_name = "Заказать Super Strong";
+
+    try {
+      await algorithm(driver, program_name, diet_name, title_name);
+    }
+    finally {
+      await driver.quit();
+    }
+  });
+
+
+  it("Питание без мяса - Vegan", async function(){
+    let driver = await new Builder().forBrowser('chrome').build();
+
+    const program_name = "meatLoss";
+    const diet_name = "veggi";
+    const title_name = "Заказать Vegan";
+
+    try {
+      await algorithm(driver, program_name, diet_name, title_name);
+    }
+    finally {
+      await driver.quit();
+    }
+  });
+
+  it("Питание без мяса - Fish", async function(){
+    let driver = await new Builder().forBrowser('chrome').build();
+
+    const program_name = "meatLoss";
+    const diet_name = "fish";
+    const title_name = "Заказать Fish";
+
+    try {
+      await algorithm(driver, program_name, diet_name, title_name);
+    }
+    finally {
+      await driver.quit();
+    }
+  });
+
+  it("Питание без мяса - Средизем­номорская диета", async function(){
+    let driver = await new Builder().forBrowser('chrome').build();
+
+    const program_name = "meatLoss";
+    const diet_name = "middlesea";
+    const title_name = "Заказать Средизем­номорскую диету";
+
+    try {
+      await algorithm(driver, program_name, diet_name, title_name);
+    }
+    finally {
+      await driver.quit();
+    }
+  });
+
+
+  it("Очищение организма - Gluten Lacto Free", async function(){
+    let driver = await new Builder().forBrowser('chrome').build();
+
+    const program_name = "cleanHeаlth";
+    const diet_name = "gluten_free";
+    const title_name = "Заказать Gluten Lacto Free";
+
+    try {
+      await algorithm(driver, program_name, diet_name, title_name);
+    }
+    finally {
+      await driver.quit();
+    }
+  });
+
+
+  it("Питание в офис - Everydaily", async function(){
+    let driver = await new Builder().forBrowser('chrome').build();
+
+    const program_name = "foodOffice";
+    const diet_name = "everydaily";
+    const title_name = "Заказать Everydaily";
+
+    try {
+      await algorithm(driver, program_name, diet_name, title_name);
+    }
+    finally {
+      await driver.quit();
+    }
+  });
+
+  it("Питание в офис - Daily", async function(){
+    let driver = await new Builder().forBrowser('chrome').build();
+
+    const program_name = "foodOffice";
+    const diet_name = "daily";
+    const title_name = "Заказать Daily";
+
+    try {
+      await algorithm(driver, program_name, diet_name, title_name);
+    }
+    finally {
+      await driver.quit();
+    }
+  });
 });
