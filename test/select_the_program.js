@@ -40,10 +40,13 @@ async function awaitedCheck(driver, fun, arg, error_text) {
   }
 }
 
-// Scroll for clicking
+// Scroll for correct clicking
 async function scrollTo(driver, element) {
-  pos_Y = element.getRect().then((value) => {return value.y;});
-  await driver.executeScript(`window.scrollBy(0,${pos_Y - 60})`);
+  const window_H_Y = await driver.executeScript(`return [window.innerHeight, window.scrollY];`);
+  const pos_Y = await element.getRect().then((value) => {return value.y});
+  const scroll_distance = pos_Y - window_H_Y[1] + window_H_Y[0]/2;
+
+  await driver.executeScript(`window.scrollBy(0,${scroll_distance});`);
 }
 
 // Await for clicking something
@@ -58,7 +61,6 @@ async function awaitedClick(driver, element) {
       return true;
     }
     catch (err) {
-      console.log(`Click error: ${err}`);
       n++;
       return false;
     }
@@ -67,7 +69,7 @@ async function awaitedClick(driver, element) {
   let is_enabled = await tryToClick();
 
   while(!is_enabled) {
-    // await scrollTo(driver, element);
+    await scrollTo(driver, element);
     await driver.sleep(check_period);
     is_enabled = await tryToClick();
     n.should.to.be.below(check_limit / check_period, error_text);
@@ -140,7 +142,6 @@ describe("Select the program", function() {
       it(`${browser_name} - ${program} - ${diet}`, async function(){
         let driver = await new Builder().forBrowser(browser_name).build();
         try {
-          await driver.manage().window().maximize();
           await driver.get(config.web_site);
 
           await algorithm(driver, program, diet, title);
