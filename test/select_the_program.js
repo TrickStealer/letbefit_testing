@@ -106,6 +106,7 @@ describe("Select the program", function() {
   browsers.forEach(({ browser_name }) => {
     it(`${browser_name}`, async function(){
       let driver = await new Builder().forBrowser(browser_name).build();
+
       try {
         await driver.get(config.web_site);
 
