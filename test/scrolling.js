@@ -6,25 +6,35 @@ should();
 
 // === UNIVERSAL CONSTANTS AND FUNCTIONS ===
 
-const scroll_check_period = await config.check_period;
-const scroll_check_limit = await config.check_limit;
+const check_period = await config.check_period;
+const check_limit = await config.check_limit;
+const css_text = '.program-main-wrap .type--w700';
+
+// Scroll to the element
+async function scrollTo(driver, element_Y) {
+  const window_Y = await driver.executeScript(`return window.scrollY;`);
+  const scroll_distance = element_Y - window_Y - 100;
+
+  await driver.executeScript(`window.scrollBy(0,${scroll_distance});`);
+}
+
+// Await for checking something
+async function awaitedCheck(driver, fun, arg, error_text) {
+  let n = 0;
+  let is_condition = await fun(arg);
+
+  while(!is_condition) {
+    await driver.sleep(check_period);
+    is_condition = await fun(arg);
+    n++;
+    n.should.to.be.below(check_limit / check_period, error_text);
+  }
+}
 
 // Check is element visible
-async function checkIsVisible(driver, element_Y) {
-  let n = 0;
-  let window_H_Y = await driver.executeScript(`return [window.innerHeight, window.scrollY];`);
-  let is_element_visible = (window_H_Y[1] < element_Y) && (element_Y < window_H_Y[1] + window_H_Y[0]);
-
-  while (!is_element_visible) {
-    await driver.sleep(scroll_check_period);
-
-    window_H_Y = await driver.executeScript(`return [window.innerHeight, window.scrollY];`);
-    is_element_visible = (window_H_Y[1] < element_Y) && (element_Y < window_H_Y[1] + window_H_Y[0]);
-
-    n++;
-    n.should.to.be.below(scroll_check_limit / scroll_check_period,
-      `Page not scrolled to goal element more than ${scroll_check_limit / 1000} seconds`);
-  }
+async function checkIsVisible([driver, element_Y]) {
+  const params = await driver.executeScript(`return { h: window.innerHeight, y: window.scrollY };`);
+  return (params.y < element_Y) && (element_Y < params.y + params.h);
 }
 
 // === TESTS ===
@@ -36,19 +46,23 @@ describe("Scrolling to form", function(){
       let driver = await new Builder().forBrowser(browser_name).build();
 
       const css_button = '.slider-main .slick-current .md__hide .action-select-topbar-program';
-      const css_text = '.program-main-wrap .type--w700';
 
       try {
         await driver.get(config.web_site);
 
         const text_Y = await driver.findElement(By.css(css_text)).getRect().then((value) => {return value.y;});
-
         await driver.findElement(By.css(css_button)).click();
+        await driver.executeScript(`window.scrollBy(0,-100);`);
 
-        await checkIsVisible(driver, text_Y);
+        await awaitedCheck(
+          driver,
+          checkIsVisible,
+          [driver, text_Y],
+          `Page not scrolled to the goal element`
+        );
+
       }
       finally {
-        await driver.sleep(5000);
         await driver.quit();
       }
     });
@@ -56,19 +70,20 @@ describe("Scrolling to form", function(){
     it(`${browser_name} - By simple scrolling`, async function(){
       let driver = await new Builder().forBrowser(browser_name).build();
 
-      const css_text = '.program-main-wrap .type--w700';
-
       try {
         await driver.get(config.web_site);
 
         const text_Y = await driver.findElement(By.css(css_text)).getRect().then((value) => {return value.y;});
+        await scrollTo(driver, text_Y);
 
-        await driver.executeScript(`window.scrollBy(0,${text_Y - 60})`);
-
-        await checkIsVisible(driver, text_Y);
+        await awaitedCheck(
+          driver,
+          checkIsVisible,
+          [driver, text_Y],
+          `Page not scrolled to the goal element`
+        );
       }
       finally {
-        await driver.sleep(5000);
         await driver.quit();
       }
     });
