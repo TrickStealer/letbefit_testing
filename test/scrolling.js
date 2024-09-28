@@ -11,7 +11,8 @@ const check_limit = await config.check_limit;
 const css_text = '.program-main-wrap .type--w700';
 
 // Scroll to the element
-async function scrollTo(driver, element_Y) {
+async function scrollTo(driver, element) {
+  const element_Y = await element.getRect().then((value) => {return value.y;});
   const window_Y = await driver.executeScript(`return window.scrollY;`);
   const scroll_distance = element_Y - window_Y - 100;
 
@@ -32,9 +33,14 @@ async function awaitedCheck(driver, fun, arg, error_text) {
 }
 
 // Check is element visible
-async function checkIsVisible([driver, element_Y]) {
+async function checkIsVisible([driver, element]) {
+  const element_Y = await element.getRect().then((value) => {return value.y;});
   const params = await driver.executeScript(`return { h: window.innerHeight, y: window.scrollY };`);
-  return (params.y < element_Y) && (element_Y < params.y + params.h);
+
+  const is_window = (params.y < element_Y) && (element_Y < params.y + params.h);
+  const is_displayed = await element.isDisplayed();
+
+  return is_window && is_displayed
 }
 
 // === TESTS ===
@@ -50,14 +56,15 @@ describe("Scrolling to form", function(){
       try {
         await driver.get(config.web_site);
 
-        const text_Y = await driver.findElement(By.css(css_text)).getRect().then((value) => {return value.y;});
+        let text_element = await driver.findElement(By.css(css_text));
+
         await driver.findElement(By.css(css_button)).click();
         await driver.executeScript(`window.scrollBy(0,-100);`);
 
         await awaitedCheck(
           driver,
           checkIsVisible,
-          [driver, text_Y],
+          [driver, text_element],
           `Page not scrolled to the goal element`
         );
 
@@ -73,13 +80,15 @@ describe("Scrolling to form", function(){
       try {
         await driver.get(config.web_site);
 
-        const text_Y = await driver.findElement(By.css(css_text)).getRect().then((value) => {return value.y;});
-        await scrollTo(driver, text_Y);
+        let text_element = await driver.findElement(By.css(css_text));
+
+        const text_Y = await text_element.getRect().then((value) => {return value.y;});
+        await scrollTo(driver, text_element);
 
         await awaitedCheck(
           driver,
           checkIsVisible,
-          [driver, text_Y],
+          [driver, text_element],
           `Page not scrolled to the goal element`
         );
       }
