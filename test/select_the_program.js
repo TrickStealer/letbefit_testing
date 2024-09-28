@@ -76,41 +76,6 @@ async function awaitedClick(driver, element) {
   }
 }
 
-// === ALGPRITHM ===
-// Main algorithm to select the program, diet and check result
-async function algorithm(driver, program_name, diet_name, title_name) {
-  const program_selector = `.js-tick-cont [data-programtype="${program_name}"]`;
-  const diet_selector = `[data-programtype="${program_name}"] [data-program="${diet_name}"]`;
-
-  let program_element = await driver.findElement(By.css(program_selector));
-  await awaitedClick(driver, program_element);
-
-  await awaitedCheck(
-    driver,
-    checkIsActive,
-    program_element,
-    `Element "${program_name}" is not active`
-  );
-
-  let diet_element = await driver.findElement(By.css(diet_selector)).findElement(By.xpath('..'));
-  await awaitedClick(driver, diet_element);
-
-  await awaitedCheck(
-    driver,
-    checkIsActive,
-    diet_element,
-    `Element "${diet_name}" is not active`
-  );
-
-//   let title_element = await driver.findElement(By.className('contract-head-title'));
-//   await awaitedCheck(
-//     driver,
-//     checkText,
-//     [title_element, title_name],
-//     `Title is not "${title_name}"`
-//   );
-}
-
 
 // === TESTS ===
 
@@ -145,8 +110,40 @@ describe("Select the program", function() {
         await driver.get(config.web_site);
 
         for (let testCase of testCases) {
-          console.log(`${testCase.program} - ${testCase.diet}`);
-          await algorithm( driver, testCase.program, testCase.diet, testCase.title );
+          const program_name = testCase.program;
+          const diet_name = testCase.diet;
+          const title_name = testCase.title;
+
+          const program_selector = `.js-tick-cont [data-programtype="${program_name}"]`;
+          const diet_selector = `[data-programtype="${program_name}"] [data-program="${diet_name}"]`;
+
+          let program_element = await driver.findElement(By.css(program_selector));
+          await awaitedClick(driver, program_element);
+
+          await awaitedCheck(
+            driver,
+            checkIsActive,
+            program_element,
+            `Element "${program_name}" is not active`
+          );
+
+          let diet_element = await driver.findElement(By.css(diet_selector)).findElement(By.xpath('..'));
+          await awaitedClick(driver, diet_element);
+
+          await awaitedCheck(
+            driver,
+            checkIsActive,
+            diet_element,
+            `Element "${diet_name}" is not active`
+          );
+
+          // let title_element = await driver.findElement(By.className('contract-head-title'));
+          // await awaitedCheck(
+          //   driver,
+          //   checkText,
+          //   [title_element, title_name],
+          //   `Title is not "${title_name}"`
+          // );
         }
       }
       finally {
