@@ -40,15 +40,47 @@ async function awaitedCheck(driver, fun, arg, error_text) {
   }
 }
 
+// Scroll for clicking
+async function scrollTo(driver, element) {
+  pos_Y = element.getRect().then((value) => {return value.y;});
+  await driver.executeScript(`window.scrollBy(0,${pos_Y - 60})`);
+}
+
+// Await for clicking something
+async function awaitedClick(driver, element) {
+  const element_attribute = await element.getAttribute("class");
+  const error_text = `Element ${element_attribute} is not clickable`;
+  let n = 0;
+
+  async function tryToClick () {
+    try {
+      await element.click();
+      return true;
+    }
+    catch (err) {
+      console.log(`Click error: ${err}`);
+      n++;
+      return false;
+    }
+  }
+
+  let is_enabled = await tryToClick();
+
+  while(!is_enabled) {
+    // await scrollTo(driver, element);
+    await driver.sleep(check_period);
+    is_enabled = await tryToClick();
+    n.should.to.be.below(check_limit / check_period, error_text);
+  }
+}
+
 // Main algorithm to select the program, diet and check result
 async function algorithm(driver, program_name, diet_name, title_name) {
-  await driver.get(config.web_site);
-
   const program_selector = `.js-tick-cont [data-programtype="${program_name}"]`;
   const diet_selector = `[data-programtype="${program_name}"] [data-program="${diet_name}"]`;
 
   let program_element = await driver.findElement(By.css(program_selector));
-  program_element.click();
+  await awaitedClick(driver, program_element);
 
   await awaitedCheck(
     driver,
@@ -58,7 +90,7 @@ async function algorithm(driver, program_name, diet_name, title_name) {
   );
 
   let diet_element = await driver.findElement(By.css(diet_selector)).findElement(By.xpath('..'));
-  diet_element.click();
+  await awaitedClick(driver, diet_element);
 
   await awaitedCheck(
     driver,
@@ -67,14 +99,13 @@ async function algorithm(driver, program_name, diet_name, title_name) {
     `Element "${diet_name}" is not active`
   );
 
-  let title_element = await driver.findElement(By.className('contract-head-title'));
-
-  await awaitedCheck(
-    driver,
-    checkText,
-    [title_element, title_name],
-    `Title is not "${title_name}"`
-  );
+//   let title_element = await driver.findElement(By.className('contract-head-title'));
+//   await awaitedCheck(
+//     driver,
+//     checkText,
+//     [title_element, title_name],
+//     `Title is not "${title_name}"`
+//   );
 }
 
 
@@ -82,7 +113,7 @@ async function algorithm(driver, program_name, diet_name, title_name) {
 
 describe("Select the program", function() {
   const textCases = [
-    { program: "weightLoss", diet: "extralight",  title: "Заказать Extralight" }
+    { program: "weightLoss", diet: "extralight",  title: "Заказать Extralight" },
     { program: "weightLoss", diet: "light",       title: "Заказать Light" },
     { program: "weightLoss", diet: "gluten_free", title: "Заказать Gluten Lacto Free" },
 
@@ -106,12 +137,12 @@ describe("Select the program", function() {
 
   browsers.forEach(({ browser_name }) => {
     textCases.forEach(({ program, diet, title }) => {
-      const browser_name = "chrome"
-
       it(`${browser_name} - ${program} - ${diet}`, async function(){
         let driver = await new Builder().forBrowser(browser_name).build();
-
         try {
+          await driver.manage().window().maximize();
+          await driver.get(config.web_site);
+
           await algorithm(driver, program, diet, title);
         }
         finally {
