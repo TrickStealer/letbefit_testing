@@ -76,6 +76,7 @@ async function awaitedClick(driver, element) {
   }
 }
 
+// === ALGPRITHM ===
 // Main algorithm to select the program, diet and check result
 async function algorithm(driver, program_name, diet_name, title_name) {
   const program_selector = `.js-tick-cont [data-programtype="${program_name}"]`;
@@ -114,7 +115,7 @@ async function algorithm(driver, program_name, diet_name, title_name) {
 // === TESTS ===
 
 describe("Select the program", function() {
-  const textCases = [
+  const testCases = [
     { program: "weightLoss", diet: "extralight",  title: "Заказать Extralight" },
     { program: "weightLoss", diet: "light",       title: "Заказать Light" },
     { program: "weightLoss", diet: "gluten_free", title: "Заказать Gluten Lacto Free" },
@@ -138,18 +139,19 @@ describe("Select the program", function() {
   ];
 
   browsers.forEach(({ browser_name }) => {
-    textCases.forEach(({ program, diet, title }) => {
-      it(`${browser_name} - ${program} - ${diet}`, async function(){
-        let driver = await new Builder().forBrowser(browser_name).build();
-        try {
-          await driver.get(config.web_site);
+    it(`${browser_name}`, async function(){
+      let driver = await new Builder().forBrowser(browser_name).build();
+      try {
+        await driver.get(config.web_site);
 
-          await algorithm(driver, program, diet, title);
+        for (let testCase of testCases) {
+          console.log(`${testCase.program} - ${testCase.diet}`);
+          await algorithm( driver, testCase.program, testCase.diet, testCase.title );
         }
-        finally {
-          await driver.quit();
-        }
-      });
+      }
+      finally {
+        await driver.quit();
+      }
     });
   });
 });
