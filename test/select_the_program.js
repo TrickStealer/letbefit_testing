@@ -1,13 +1,14 @@
-import { config } from '../config.js';
-import { browsers } from '../browsers.js';
+import { config } from '../source/config.js';
+import { browsers } from '../source/browsers.js';
+import UniversalFunctions from '../source/functions.js';
+
 import { Builder, By, Key } from 'selenium-webdriver';
 import { should } from 'chai';
 should();
 
 // === UNIVERSAL CONSTANTS AND FUNCTIONS ===
 
-const check_period = config.check_period;
-const check_limit = config.check_limit;
+const funs = new UniversalFunctions();
 
 // Check is element active and displayed
 async function checkIsActive(element) {
@@ -25,19 +26,6 @@ async function checkText([element, goal_text]) {
   return await element.getText().then((text) => {
     return text == goal_text
   })
-}
-
-// Await for checking something
-async function awaitedCheck(driver, fun, arg, error_text) {
-  let n = 0;
-  let is_condition = await fun(arg);
-
-  while(!is_condition) {
-    await driver.sleep(check_period);
-    is_condition = await fun(arg);
-    n++;
-    n.should.to.be.below(check_limit / check_period, error_text);
-  }
 }
 
 // Scroll for correct clicking
@@ -70,9 +58,9 @@ async function awaitedClick(driver, element) {
 
   while(!is_enabled) {
     await scrollTo(driver, element);
-    await driver.sleep(check_period);
+    await driver.sleep(config.check_period);
     is_enabled = await tryToClick();
-    n.should.to.be.below(check_limit / check_period, error_text);
+    n.should.to.be.below(config.check_limit / config.check_period, error_text);
   }
 }
 
@@ -121,7 +109,7 @@ describe("Select the program", function() {
           let program_element = await driver.findElement(By.css(program_selector));
           await awaitedClick(driver, program_element);
 
-          await awaitedCheck(
+          await funs.awaitedCheck(
             driver,
             checkIsActive,
             program_element,
@@ -131,7 +119,7 @@ describe("Select the program", function() {
           let diet_element = await driver.findElement(By.css(diet_selector)).findElement(By.xpath('..'));
           await awaitedClick(driver, diet_element);
 
-          await awaitedCheck(
+          await funs.awaitedCheck(
             driver,
             checkIsActive,
             diet_element,
@@ -139,7 +127,7 @@ describe("Select the program", function() {
           );
 
           // let title_element = await driver.findElement(By.className('contract-head-title'));
-          // await awaitedCheck(
+          // await funs.awaitedCheck(
           //   driver,
           //   checkText,
           //   [title_element, title_name],
