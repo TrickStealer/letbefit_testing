@@ -19,6 +19,15 @@ class UniversalFunctions {
       n.should.to.be.below(check_limit / check_period, error_text);
     }
   }
+
+  // Scroll to the element
+  async scrollTo(driver, element) {
+    const element_Y = await element.getRect().then((value) => {return value.y;});
+    const window_Y = await driver.executeScript(`return window.scrollY;`);
+    const scroll_distance = element_Y - window_Y - 100;
+
+    await driver.executeScript(`window.scrollBy(0,${scroll_distance});`);
+  }
 }
 
-export default UniversalFunctions
+export default UniversalFunctions;

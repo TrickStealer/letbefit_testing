@@ -9,15 +9,6 @@ import { Builder, By, Key } from 'selenium-webdriver';
 const funs = new UniversalFunctions();
 const css_text = '.program-main-wrap .type--w700';
 
-// Scroll to the element
-async function scrollTo(driver, element) {
-  const element_Y = await element.getRect().then((value) => {return value.y;});
-  const window_Y = await driver.executeScript(`return window.scrollY;`);
-  const scroll_distance = element_Y - window_Y - 100;
-
-  await driver.executeScript(`window.scrollBy(0,${scroll_distance});`);
-}
-
 // Check is element visible
 async function checkIsVisible([driver, element]) {
   const element_Y = await element.getRect().then((value) => {return value.y;});
@@ -31,7 +22,7 @@ async function checkIsVisible([driver, element]) {
 
 // === TESTS ===
 
-describe("Scrolling to form", function(){
+describe("Scrolling to the form", function(){
   browsers.forEach(({ browser_name }) => {
 
     it(`${browser_name} - By click the button 'Выбрать программу'`, async function(){
@@ -56,6 +47,7 @@ describe("Scrolling to form", function(){
 
       }
       finally {
+        await driver.sleep(3000);
         await driver.quit();
       }
     });
@@ -69,7 +61,7 @@ describe("Scrolling to form", function(){
         let text_element = await driver.findElement(By.css(css_text));
 
         const text_Y = await text_element.getRect().then((value) => {return value.y;});
-        await scrollTo(driver, text_element);
+        await funs.scrollTo(driver, text_element);
 
         await funs.awaitedCheck(
           driver,
@@ -79,6 +71,7 @@ describe("Scrolling to form", function(){
         );
       }
       finally {
+        await driver.sleep(3000);
         await driver.quit();
       }
     });

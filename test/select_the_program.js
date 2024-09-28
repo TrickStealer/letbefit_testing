@@ -28,15 +28,6 @@ async function checkText([element, goal_text]) {
   })
 }
 
-// Scroll for correct clicking
-async function scrollTo(driver, element) {
-  const window_H_Y = await driver.executeScript(`return [window.innerHeight, window.scrollY];`);
-  const pos_Y = await element.getRect().then((value) => {return value.y});
-  const scroll_distance = pos_Y - window_H_Y[1] + window_H_Y[0]/2;
-
-  await driver.executeScript(`window.scrollBy(0,${scroll_distance});`);
-}
-
 // Await for clicking something
 async function awaitedClick(driver, element) {
   const element_attribute = await element.getAttribute("class");
@@ -57,7 +48,7 @@ async function awaitedClick(driver, element) {
   let is_enabled = await tryToClick();
 
   while(!is_enabled) {
-    await scrollTo(driver, element);
+    await funs.scrollTo(driver, element);
     await driver.sleep(config.check_period);
     is_enabled = await tryToClick();
     n.should.to.be.below(config.check_limit / config.check_period, error_text);
