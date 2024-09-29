@@ -28,6 +28,46 @@ class UniversalFunctions {
 
     await driver.executeScript(`window.scrollBy(0,${scroll_distance});`);
   }
+
+  // Await for clicking something
+  async awaitedClick(driver, element) {
+    let n = 0;
+
+    const element_attribute = await element.getAttribute("class");
+    const error_text = `Element ${element_attribute} is not clickable`;
+
+    async function tryToClick () {
+      try {
+        await element.click();
+        return true;
+      }
+      catch (err) {
+        n++;
+        return false;
+      }
+    }
+
+    let is_enabled = await tryToClick();
+
+    while(!is_enabled) {
+      await driver.sleep(check_period);
+
+      await funs.scrollTo(driver, element);
+      is_enabled = await tryToClick();
+      n.should.to.be.below(check_limit / check_period, error_text);
+    }
+  }
+
+  // Check is element active and displayed
+  async checkIsActive(element) {
+    const is_displayed = await element.isDisplayed();
+
+    const is_active = await element.getAttribute("class").then((text) => {
+      return text.split(' ').includes('active');
+    });
+
+    return is_active && is_displayed
+  }
 }
 
 export default UniversalFunctions;

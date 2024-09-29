@@ -10,17 +10,6 @@ should();
 
 const funs = new UniversalFunctions();
 
-// Check is element active and displayed
-async function checkIsActive(element) {
-  const is_displayed = await element.isDisplayed();
-
-  const is_active = await element.getAttribute("class").then((text) => {
-    return text.split(' ').includes('active');
-  });
-
-  return is_active && is_displayed
-}
-
 // Check is element have goal text
 async function checkText([element, goal_text]) {
   return await element.getText().then((text) => {
@@ -102,7 +91,7 @@ describe("Select the program", function() {
 
           await funs.awaitedCheck(
             driver,
-            checkIsActive,
+            funs.checkIsActive,
             program_element,
             `Element "${program_name}" is not active`
           );
@@ -112,7 +101,7 @@ describe("Select the program", function() {
 
           await funs.awaitedCheck(
             driver,
-            checkIsActive,
+            funs.checkIsActive,
             diet_element,
             `Element "${diet_name}" is not active`
           );
