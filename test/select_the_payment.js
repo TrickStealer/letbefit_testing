@@ -67,8 +67,6 @@ describe("Select the program", function() {
           const have_coupon = testCase.have_coupon;
           const recommended = testCase.recommended;
 
-          console.log(`${payment} ${no_weekend} ${have_coupon} ${recommended}`);
-
           const payment_selector = `[data-item="${payment}"] .style-input-element`;
           const no_weekend_selector = `.action-excludeWeek .style-input-element`;
           const have_coupon_selector = `.couponBlock .style-input-element`;
@@ -157,8 +155,6 @@ describe("Select the program", function() {
               `Element "recommendFriend" is not hidden but should be`
             );
           }
-
-          await driver.sleep(5000);
         }
       }
       finally {
@@ -166,27 +162,27 @@ describe("Select the program", function() {
       }
     });
 
-    // it(`${browser_name} - inputs`, async function() {
-    //   let driver = await new Builder().forBrowser(browser_name).build();
-    //
-    //   try {
-    //     await driver.get(config.web_site);
+    it(`${browser_name} - inputs`, async function() {
+      let driver = await new Builder().forBrowser(browser_name).build();
+
+      try {
+        await driver.get(config.web_site);
 
         // await driver.findElement(By.css(`[name="coupon"]`))
         //   .sendKeys(`1234567890`);
         //
         // await driver.findElement(By.css(`.checkPhoneBlock .input-mask--phone`))
         //   .sendKeys(`1234567890`);
-
-
-
+        //
+        //
+        //
         // await driver.findElement(By.css(`.checkPhoneBlockWithoutCoupon .input-mask--phone`))
         //   .sendKeys(`1234567890`);
 
-    //   }
-    //   finally {
-    //     await driver.quit();
-    //   }
-    // });
+      }
+      finally {
+        await driver.quit();
+      }
+    });
   });
 });
