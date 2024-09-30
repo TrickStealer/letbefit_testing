@@ -1,18 +1,44 @@
 import { config } from './config.js';
 import { should } from 'chai';
+import { Builder, By, Key, until } from 'selenium-webdriver';
+until
 should();
 
+// Constants
 const check_period = await config.check_period;
 const check_limit = await config.check_limit;
 
+const widjet_selector = `[class="widget js-widget animation_slideLTR"]`;
+const widjet_close_selector = `[class="widget js-widget animation_slideLTR"] .js-close`;
+
 // Universal functions for tests
 class UniversalFunctions {
+  // Close big widjet is it appears during tests
+  async closeWidjet(driver) {
+    try {
+      console.log(`Start`);
+      await driver.wait(until.elementLocated(By.css(widjet_selector)), 50000);
+      // await driver.findElement(By.css(widjet_selector));
+      console.log(`Widjet found`);
+      await driver.sleep(check_period);
+    }
+    catch (error) {
+      console.log(`Widjet not found`);
+      console.log(error);
+    }
+  }
+  // await driver.findElement(By.css(widjet_close_selector)).click();
+  // console.log(`Widjet found and closed`);
+
+
+
   // Await for checking something
   async awaitedCheck(driver, fun, arg, error_text) {
     let n = 0;
     let is_condition = await fun(arg);
 
     while(!is_condition) {
+      console.log(n);
       await driver.sleep(check_period);
       is_condition = await fun(arg);
       n++;
@@ -58,7 +84,7 @@ class UniversalFunctions {
     }
   }
 
-  // Check is element active and displayed
+  // Check is element displayed and active
   async checkIsActive(element) {
     const is_displayed = await element.isDisplayed();
 
@@ -67,6 +93,39 @@ class UniversalFunctions {
     });
 
     return is_active && is_displayed
+  }
+
+  // Check is element displayed and NOT active
+  async checkIsNotActive(element) {
+    const is_displayed = await element.isDisplayed();
+
+    const is_active = await element.getAttribute("class").then((text) => {
+      return text.split(' ').includes('active');
+    });
+
+    return (!is_active) && is_displayed
+  }
+
+  // Check is element displayed and include word in class
+  async checkIsIncludeClass([element, inp]) {
+    const is_displayed = await element.isDisplayed();
+
+    const is_include = await element.getAttribute("class").then((text) => {
+      return text.split(' ').includes(inp);
+    });
+
+    return is_include && !is_displayed
+  }
+
+  // Check is element displayed and NOT include word in class
+  async checkIsNotIncludeClass([element, inp]) {
+    const is_displayed = await element.isDisplayed();
+
+    const is_include = await element.getAttribute("class").then((text) => {
+      return text.split(' ').includes(inp);
+    });
+
+    return !is_include && is_displayed
   }
 }
 
