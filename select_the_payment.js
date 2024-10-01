@@ -10,29 +10,6 @@ should();
 
 const funs = new UniversalFunctions();
 
-// Check is element active and displayed
-async function checkIsSelectedFlex([should_selected, element]) {
-  const css_display = await element.getCssValue('display');
-  const is_selected = (css_display == 'flex');
-  return (is_selected == should_selected);
-}
-
-async function selectCheckBox(driver, should_selected, selector) {
-  let element = await driver.findElement(By.css(selector));
-
-  if (! (await checkIsSelectedFlex([should_selected, element]))) {
-    await funs.awaitedClick(driver, element);
-  }
-
-  await funs.awaitedCheck(
-    driver,
-    checkIsSelectedFlex,
-    [should_selected, element],
-    `Element ${selector} not selected`
-  );
-}
-
-
 // === TESTS ===
 
 describe("Select the program", function() {
@@ -98,10 +75,10 @@ describe("Select the program", function() {
           }
 
           // Select exclude weekend or not
-          await selectCheckBox(driver, no_weekend, no_weekend_selector);
+          await funs.selectCheckBox(driver, no_weekend, no_weekend_selector);
 
           // Select have coupon or not
-          await selectCheckBox(driver, have_coupon, have_coupon_selector);
+          await funs.selectCheckBox(driver, have_coupon, have_coupon_selector);
 
           let coupon_block_element = await driver.findElement(By.className(`js-coupon-block`));
           let nocoupon_block_element = await driver.findElement(By.className(`js-nocoupon-block`));
@@ -136,7 +113,7 @@ describe("Select the program", function() {
           }
 
           // Select recommended by friend or not
-          await selectCheckBox(driver, recommended, recommended_selector);
+          await funs.selectCheckBox(driver, recommended, recommended_selector);
 
           let recommendFriend_element = await driver.findElement(By.css(`.contract-content > [data-item="recommendFriend"]`));
           if (recommended) {
@@ -176,7 +153,7 @@ describe("Select the program", function() {
         await funs.awaitedInput(driver, phone_element, `1234567890`);
 
         // Select checkbox "У меня есть купон"
-        await selectCheckBox(driver, true, have_coupon_selector);
+        await funs.selectCheckBox(driver, true, have_coupon_selector);
 
         // Input phone and coupon
         let coupon_element = await driver.findElement(By.css(`[name="coupon"]`));
@@ -186,7 +163,7 @@ describe("Select the program", function() {
         await funs.awaitedInput(driver, phone_element, `1234567890`);
 
         // Select checkbox "Befit мне рекомендовал друг"
-        await selectCheckBox(driver, true, recommended_selector);
+        await funs.selectCheckBox(driver, true, recommended_selector);
 
         // Input friend's phone
         let recommended_phone_element = await driver.findElement(By.css(`.input-cont [name="phone_friend"]`));

@@ -13,32 +13,12 @@ const widjet_close_selector = `[class="widget js-widget animation_slideLTR"] .js
 
 // Universal functions for tests
 class UniversalFunctions {
-  // Close big widjet is it appears during tests
-  async closeWidjet(driver) {
-    try {
-      console.log(`Start`);
-      await driver.wait(until.elementLocated(By.css(widjet_selector)), 50000);
-      // await driver.findElement(By.css(widjet_selector));
-      console.log(`Widjet found`);
-      await driver.sleep(check_period);
-    }
-    catch (error) {
-      console.log(`Widjet not found`);
-      console.log(error);
-    }
-  }
-  // await driver.findElement(By.css(widjet_close_selector)).click();
-  // console.log(`Widjet found and closed`);
-
-
-
   // Await for checking something
   async awaitedCheck(driver, fun, arg, error_text) {
     let n = 0;
     let is_condition = await fun(arg);
 
     while(!is_condition) {
-      console.log(n);
       await driver.sleep(check_period);
       is_condition = await fun(arg);
       n++;
@@ -158,6 +138,53 @@ class UniversalFunctions {
     });
 
     return !is_include && is_displayed
+  }
+
+  // Check is element selected as flex container
+  async checkIsSelectedFlex([should_selected, element]) {
+    const css_display = await element.getCssValue('display');
+    const is_selected = (css_display == 'flex');
+    return (is_selected == should_selected);
+  }
+
+  // Select checkbox and check it
+  async selectCheckBox(driver, should_selected, selector) {
+    let element = await driver.findElement(By.css(selector));
+
+    if (! (await this.checkIsSelectedFlex([should_selected, element]))) {
+      await this.awaitedClick(driver, element);
+    }
+
+    await funs.awaitedCheck(
+      driver,
+      this.checkIsSelectedFlex,
+      [should_selected, element],
+      `Element ${selector} not selected`
+    );
+  }
+
+  // Check dropdown element
+  async checkDropdown(driver,
+                      css_to_click,
+                      css_from_list,
+                      css_result,
+                      attr_fom_list,
+                      attr_result,
+                      num_fom_list) {
+
+    let to_click_element = await driver.findElement(By.css(css_to_click));
+    await this.awaitedClick(driver, to_click_element);
+
+    let from_list_element = await driver.findElements(By.css(css_from_list))
+      .then((values) => {
+        return values[num_fom_list];
+      });
+
+    const from_list_text = await from_list_element.getDomAttribute(attr_fom_list);
+    await this.awaitedClick(driver, from_list_element);
+
+    const result_text = await driver.findElement(By.css(css_result)).getDomAttribute(attr_result);
+    result_text.should.equal(from_list_text);
   }
 }
 
