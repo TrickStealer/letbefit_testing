@@ -61,7 +61,6 @@ class UniversalFunctions {
     let error_text;
 
     const element_attribute = await element.getAttribute("class");
-
     async function tryToClick () {
       try {
         await element.click();

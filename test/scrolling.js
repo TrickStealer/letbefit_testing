@@ -7,7 +7,6 @@ import { Builder, By, Key } from 'selenium-webdriver';
 // === UNIVERSAL CONSTANTS AND FUNCTIONS ===
 
 const funs = new UniversalFunctions();
-const css_text = '.program-main-wrap .type--w700';
 
 // Check is element visible
 async function checkIsVisible([driver, element]) {
@@ -29,13 +28,15 @@ describe("Scrolling to the form", function(){
       let driver = await new Builder().forBrowser(browser_name).build();
 
       const css_button = '.slider-main .slick-current .md__hide .action-select-topbar-program';
+      const css_text = '.program-main-wrap .type--w700';
 
       try {
         await driver.get(config.web_site);
 
         let text_element = await driver.findElement(By.css(css_text));
+        let button_element = await driver.findElement(By.css(css_button));
 
-        await driver.findElement(By.css(css_button)).click();
+        await funs.awaitedClick(driver, button_element);
         await driver.executeScript(`window.scrollBy(0,-100);`);
 
         await funs.awaitedCheck(
@@ -44,16 +45,16 @@ describe("Scrolling to the form", function(){
           [driver, text_element],
           `Page not scrolled to the goal element`
         );
-
       }
       finally {
-        await driver.sleep(3000);
         await driver.quit();
       }
     });
 
     it(`${browser_name} - By simple scrolling`, async function(){
       let driver = await new Builder().forBrowser(browser_name).build();
+
+      const css_text = '.program-main-wrap .type--w700';
 
       try {
         await driver.get(config.web_site);
@@ -71,7 +72,6 @@ describe("Scrolling to the form", function(){
         );
       }
       finally {
-        await driver.sleep(3000);
         await driver.quit();
       }
     });
