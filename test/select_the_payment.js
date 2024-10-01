@@ -12,7 +12,7 @@ const funs = new UniversalFunctions();
 
 // Check is element active and displayed
 async function checkIsSelectedFlex([should_selected, element]) {
-  const css_display = await element.getCssValue('display')
+  const css_display = await element.getCssValue('display');
   const is_selected = (css_display == 'flex');
   return (is_selected == should_selected);
 }
@@ -162,23 +162,35 @@ describe("Select the program", function() {
       }
     });
 
-    it(`${browser_name} - inputs`, async function() {
+    it(`${browser_name} - text inputs`, async function() {
       let driver = await new Builder().forBrowser(browser_name).build();
 
       try {
         await driver.get(config.web_site);
 
-        // await driver.findElement(By.css(`[name="coupon"]`))
-        //   .sendKeys(`1234567890`);
-        //
-        // await driver.findElement(By.css(`.checkPhoneBlock .input-mask--phone`))
-        //   .sendKeys(`1234567890`);
-        //
-        //
-        //
-        // await driver.findElement(By.css(`.checkPhoneBlockWithoutCoupon .input-mask--phone`))
-        //   .sendKeys(`1234567890`);
+        const have_coupon_selector = `.couponBlock .style-input-element`;
+        const recommended_selector = `[data-test="orderCheckFriend"] .style-input-element`;
 
+        // Input phone without coupon
+        let phone_element = await driver.findElement(By.css(`.checkPhoneBlockWithoutCoupon .input-mask--phone`));
+        await funs.awaitedInput(driver, phone_element, `1234567890`);
+
+        // Select checkbox "У меня есть купон"
+        await selectCheckBox(driver, true, have_coupon_selector);
+
+        // Input phone and coupon
+        let coupon_element = await driver.findElement(By.css(`[name="coupon"]`));
+        await funs.awaitedInput(driver, coupon_element, `1234567890`);
+
+        phone_element = await driver.findElement(By.css(`.checkPhoneBlock .input-mask--phone`));
+        await funs.awaitedInput(driver, phone_element, `1234567890`);
+
+        // Select checkbox "Befit мне рекомендовал друг"
+        await selectCheckBox(driver, true, recommended_selector);
+
+        // Input friend's phone
+        let recommended_phone_element = await driver.findElement(By.css(`.input-cont [name="phone_friend"]`));
+        await funs.awaitedInput(driver, recommended_phone_element, `1234567890`);
       }
       finally {
         await driver.quit();

@@ -58,9 +58,9 @@ class UniversalFunctions {
   // Await for clicking something
   async awaitedClick(driver, element) {
     let n = 0;
+    let error_text;
 
     const element_attribute = await element.getAttribute("class");
-    const error_text = `Element ${element_attribute} is not clickable`;
 
     async function tryToClick () {
       try {
@@ -68,7 +68,7 @@ class UniversalFunctions {
         return true;
       }
       catch (err) {
-        n++;
+        error_text = `${element_attribute} not clicked: ${err}`;
         return false;
       }
     }
@@ -77,9 +77,42 @@ class UniversalFunctions {
 
     while(!is_enabled) {
       await driver.sleep(check_period);
+      await this.scrollTo(driver, element);
 
-      await funs.scrollTo(driver, element);
       is_enabled = await tryToClick();
+
+      n++;
+      n.should.to.be.below(check_limit / check_period, error_text);
+    }
+  }
+
+  // Await for input some text
+  async awaitedInput(driver, element, input_text) {
+    let n = 0;
+    let error_text;
+
+    const element_attribute = await element.getAttribute("class");
+
+    async function tryToInput () {
+      try {
+        await element.sendKeys(input_text);
+        return true;
+      }
+      catch (err) {
+        error_text = `${element_attribute} not inputed: ${err}`;
+        return false;
+      }
+    }
+
+    let is_enabled = await tryToInput();
+
+    while(!is_enabled) {
+      await driver.sleep(check_period);
+      await this.scrollTo(driver, element);
+
+      is_enabled = await tryToInput();
+
+      n++;
       n.should.to.be.below(check_limit / check_period, error_text);
     }
   }
