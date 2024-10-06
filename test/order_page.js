@@ -10,33 +10,65 @@ should();
 
 const funs = new UniversalFunctions();
 
+const phone_text = `0000000000`;
+const phone_text_modified = `+7(${phone_text.slice(0, 3)})` +
+                            `${phone_text.slice(3,6)}-` +
+                            `${phone_text.slice(6,8)}-` +
+                            `${phone_text.slice(8,10)}`;
+
 
 // === TESTS ===
 
 describe("Fill the order form", function() {
   browsers.forEach(({ browser_name }) => {
-    it(`${browser_name} - all except program`, async function() {
+    it(`${browser_name} - check all fields except the program`, async function() {
       let driver = await new Builder().forBrowser(browser_name).build();
 
       try {
         await driver.get(config.web_site);
 
-        // Check mobile phone
-        await driver.findElement(By.className(`type--primary`)).getText().then((value) => {
-          value.should.equal("+7(123)456-78-90");
-        });
+        // Input phone number
+        let phone_element = await driver.findElement(By.css(`.checkPhoneBlockWithoutCoupon .input-mask--phone`));
+        for (let i of phone_text)
+        {
+          await funs.awaitedInput(driver, phone_element, i);
+        }
+
+        // Click the button for move to next page
+        let button_element = await driver.findElement(By.className(`actionSubmitOrder`));
+        funs.awaitedClick(driver, button_element);
+
+        // Check mobile phone at next page
+        async function checkText([element_css, goal_text]) {
+          try {
+            await driver.findElement(By.css(element_css)).getText().then((value) => {
+              value.should.equal(goal_text);
+            });
+            return true
+          }
+          catch {
+            return false
+          }
+        }
+
+        await funs.awaitedCheck(
+          driver,
+          checkText,
+          [`.type--primary`, phone_text_modified],
+          `".type--primary" text not found or not equal ${phone_text_modified}`
+        );
 
         // Input name
         let name_element = await driver.findElement(By.css(`.input-cont [name="name"]`));
-        await funs.awaitedInput(driver, name_element, `Masha`);
+        await funs.awaitedInput(driver, name_element, `Тест`);
 
         // Input email
         let email_element = await driver.findElement(By.css(`.input-cont [name="email"]`));
-        await funs.awaitedInput(driver, email_element, `Masha@masha.ru`);
+        await funs.awaitedInput(driver, email_element, `Test@test.ru`);
 
         // Input adress
         let adress_element = await driver.findElement(By.css(`.input-cont [name="adres"]`));
-        await funs.awaitedInput(driver, adress_element, `1 Masha st`);
+        await funs.awaitedInput(driver, adress_element, `Тестовая ул., д 1`);
 
         // Input order day
         await funs.checkDropdown(
@@ -101,8 +133,7 @@ describe("Fill the order form", function() {
         );
 
         let comment_text_element = await driver.findElement(By.css(`[name="comment"]`));
-        await funs.awaitedInput(driver, comment_text_element, `Something`);
-        await driver.sleep(1000);
+        await funs.awaitedInput(driver, comment_text_element, `Тестовый комментарий`);
 
         funs.selectCheckBox(driver, false, `.action-show-textarea .style-input-element`);
         await funs.awaitedCheck(
@@ -113,12 +144,11 @@ describe("Fill the order form", function() {
         );
       }
       finally {
-        await driver.sleep(5000);
         await driver.quit();
       }
     });
 
-    // it(`${browser_name} - program`, async function() {
+    // it(`${browser_name} - check the program`, async function() {
     //   let driver = await new Builder().forBrowser(browser_name).build();
     //
     //   try {
@@ -132,7 +162,7 @@ describe("Fill the order form", function() {
     //     await driver.quit();
     //   }
     // });
-    //
+
     // it(`${browser_name} - delivery`, async function() {
     //   let driver = await new Builder().forBrowser(browser_name).build();
     //

@@ -53,7 +53,6 @@ class UniversalFunctions {
     }
 
     let is_enabled = await tryToClick();
-
     while(!is_enabled) {
       await driver.sleep(check_period);
       await this.scrollTo(driver, element);
